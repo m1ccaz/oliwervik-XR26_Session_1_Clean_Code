@@ -10,9 +10,14 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         if (Instance == null)
+        {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
         else
+        {
             Destroy(gameObject);
+        }
     }
 
     void Start()
@@ -20,14 +25,12 @@ public class GameManager : MonoBehaviour
         uiManager = FindObjectOfType<UIManager>();
 
         if (uiManager != null)
-            uiManager.HideGameOver(); // Se till att den är dold i början
+            uiManager.HideGameOver(); 
     }
 
     public void WinGame()
     {
         Debug.Log("You Win!");
-
-        // Starta om spelet efter 3 sekunder (ingen UI visas för vinst)
         Invoke("RestartGame", 3f);
     }
 
@@ -39,6 +42,20 @@ public class GameManager : MonoBehaviour
             uiManager.ShowGameOver();
 
         Invoke("RestartGame", 3f);
+    }
+
+    public void DamagePlayer(int amount)
+    {
+        
+        PlayerHealth health = FindObjectOfType<PlayerHealth>();
+        if (health != null)
+        {
+            health.TakeDamage(amount);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerHealth not found!");
+        }
     }
 
     void RestartGame()

@@ -5,7 +5,11 @@ public class TimerSystem : MonoBehaviour
 {
     public float totalTime = 60f;
     private float currentTime;
+
     public static event Action<float> OnTimerUpdated;
+    public static event Action OnTimeUp;
+
+    private bool isRunning = true;
 
     void Start()
     {
@@ -14,10 +18,26 @@ public class TimerSystem : MonoBehaviour
 
     void Update()
     {
-        if (currentTime > 0f)
+        if (!isRunning) return;
+
+        currentTime -= Time.deltaTime;
+
+        if (currentTime > 0)
         {
-            currentTime -= Time.deltaTime;
             OnTimerUpdated?.Invoke(currentTime);
         }
+        else
+        {
+            isRunning = false;
+            OnTimerUpdated?.Invoke(0f);
+            OnTimeUp?.Invoke();
+        }
+    }
+
+    public void StopTimer()
+    {
+        isRunning = false;
     }
 }
+
+

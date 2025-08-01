@@ -1,21 +1,27 @@
 using UnityEngine;
-using TMPro; // ← för TextMeshPro
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
-    public TMP_Text timerText; // ← ändrat till TMP_Text
-    public GameObject gameOverPanel;
+    public GameObject gameOverPanel;     // Dra in från Canvas
+    public TMP_Text scoreText;           // Dra in TextMeshPro för poäng
+    public TMP_Text timerText;
 
     void Start()
     {
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
+        HideGameOver();
     }
 
-    public void UpdateTimerUI(float time)
+    void OnEnable()
     {
-        if (timerText != null)
-            timerText.text = "Time: " + time.ToString("F1");
+        Player.OnScoreChanged += UpdateScore;
+        TimerSystem.OnTimerUpdated += UpdateTimer;
+    }
+
+    void OnDisable()
+    {
+        Player.OnScoreChanged -= UpdateScore;
+        TimerSystem.OnTimerUpdated -= UpdateTimer;
     }
 
     public void ShowGameOver()
@@ -24,13 +30,22 @@ public class UIManager : MonoBehaviour
             gameOverPanel.SetActive(true);
     }
 
-    void OnEnable()
+    public void HideGameOver()
     {
-        TimerSystem.OnTimerUpdated += UpdateTimerUI;
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
     }
 
-    void OnDisable()
+    public void UpdateScore(int score)
     {
-        TimerSystem.OnTimerUpdated -= UpdateTimerUI;
+        if (scoreText != null)
+            scoreText.text = "Score: " + score;
+
+    }
+
+    public void UpdateTimer(float time)
+    {
+        if (timerText != null)
+            timerText.text = "Time: " + time.ToString("F1");
     }
 }
